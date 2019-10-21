@@ -1,0 +1,11 @@
+--- a/servconf.c	2017-10-02 21:34:26.000000000 +0200
++++ b/servconf.c	2017-10-07 04:34:14.000000000 +0200
+@@ -195,7 +195,7 @@ fill_default_server_options(ServerOption
+ 
+ 	/* Portable-specific options */
+ 	if (options->use_pam == -1)
+-		options->use_pam = 0;
++		options->use_pam = 1;
+ 
+ 	/* Standard Options */
+ 	if (options->num_host_key_files == 0) {
