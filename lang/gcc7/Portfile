@@ -30,12 +30,29 @@ master_sites        ftp://ftp.funet.fi/pub/mirrors/sources.redhat.com/pub/gcc/re
                     ftp://gcc.gnu.org/pub/gcc/releases/gcc-${version}/ \
                     gnu:gcc/gcc-${version}
 
-distname            gcc-${version}
-use_xz              yes
 
 checksums           rmd160  91d46ec088badec75f41a2ad2a0ba228a6715107 \
                     sha256  b81946e7f01f90528a1f7352ab08cc602b9ccc05d4e44da4bd501c5a189ee661 \
                     size    62783088
+
+if { ${os.platform} eq "darwin" && ${cxx_stdlib} ne "libc++" } {
+
+    # roll gcc7 back to version 7.4.0 as 7.5.0 does not play nicely with
+    # the system /usr/lib/libstdc++.dylib at present. This is being looked at upstream.
+    # we bump the epoch to roll back, but will also bump the revisions to 4 for clarity
+    # https://trac.macports.org/ticket/59832
+
+    epoch           4
+    version         7.4.0
+    revision        4
+    subport libgcc7 {revision 4}
+    checksums       rmd160  77d3cdafe7df748fa484a300e9513acb3ee2c2e1 \
+                    sha256  eddde28d04f334aec1604456e536416549e9b1aa137fc69204e65eb0c009fe51 \
+                    size    62601888
+}
+
+distname            gcc-${version}
+use_xz              yes
 
 # Check if this is the last supported gcc version for this system.
 # If it is, libgcc7 installs a full runtime, otherwise it only installs
