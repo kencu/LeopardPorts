@@ -50,7 +50,7 @@ compiler.blacklist-append {clang < 300}
 compiler.blacklist-append {clang > 700 < 800}
 
 patchfiles-append  patch-babl-32bitfix.diff
-patchfiles-append  patch-babl-linker-error-fix.diff
+patchfiles-append  patch-babl-linker-fix-darwin.diff
 patchfiles-append  patch-babl-allow-non-clang-compilers-on-darwin.diff
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
