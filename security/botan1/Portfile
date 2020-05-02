@@ -26,16 +26,19 @@ checksums           rmd160  77336d0c9a10c03e86ad5946f1e357ec70cee9e7 \
                     sha256  6847ffb64b8d2f939dccfecc17bd2c80385d08f7621e2c56d3a335118e823613
 
 depends_build       port:python27
-depends_lib         port:zlib port:bzip2
+depends_lib         port:zlib port:bzip2 port:openssl10
 
 # respect MacPorts configure values
-patchfiles-append   patch-compiler_flags.diff
+patchfiles-append   patch-compiler_flags.diff patch-botan1-use-openssl10.diff
 post-patch {
     reinplace -W ${worksrcpath}/src/build-data/cc \
         "s|__MACPORTS_CXX_STDLIB__|${configure.cxx_stdlib}|g" \
         clang.txt
     reinplace -W ${worksrcpath}/src/build-data/cc \
         "s|__MACPORTS_OPT_FLAG__|${configure.optflags}|g" \
+        clang.txt gcc.txt
+    reinplace -W ${worksrcpath}/src/build-data/cc \
+        "s|@@PREFIX@@|${prefix}|g" \
         clang.txt gcc.txt
 }
 configure.args-append   --cc-bin=${configure.cxx}
@@ -54,7 +57,7 @@ if {[string match *clang* ${configure.compiler}] && ${configure.cxx_stdlib} eq "
 }
 
 configure.cmd       ${prefix}/bin/python2.7 ./configure.py
-configure.args-append --docdir=share/doc --with-zlib --with-bzip2
+configure.args-append --docdir=share/doc --with-zlib --with-bzip2  --with-openssl
 
 if {[string match *clang* ${configure.compiler}]} {
     configure.args-append --cc=clang
