@@ -1,0 +1,85 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                yelp
+version             3.36.0
+license             GPL-2
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Help browser for GNOME.
+long_description    Yelp is the default help browser for the \
+                    GNOME desktop. Yelp provides a simple graphical \
+                    interface for viewing DocBook, HTML, man, and info \
+                    formatted documentation.
+maintainers         {devans @dbevans} openmaintainer
+categories          gnome
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Yelp
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  f83274017ce6ca078055baa74494d62b4307af9f \
+                    sha256  fd4b3e23d31ad2bebe42ac8f80242b2d9bef51418bf62b59acdf2440bd94ed24 \
+                    size    1538076
+
+depends_build       port:pkgconfig \
+                    port:gettext \
+                    port:itstool \
+                    port:appstream-glib \
+                    port:gtk-doc
+
+depends_lib         port:desktop-file-utils \
+                    port:gtk3 \
+                    port:sqlite3 \
+                    port:xz \
+                    port:bzip2 \
+                    port:yelp-xsl \
+                    path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
+
+#
+# if yelp is invoked without a URI argument
+# it defaults to help:user-guide
+#
+
+depends_run         port:gnome-user-docs \
+                    port:gnome-getting-started-docs \
+                    port:adwaita-icon-theme
+
+patchfiles          patch-m4-ax_compiler_flags_ldflags.m4.diff
+
+use_autoreconf      yes
+autoreconf.args     -vfi
+
+# error: redefinition of typedef ‘WebKitWebEditor’
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
+
+configure.args      --enable-compile-warnings=minimum \
+                    --disable-schemas-compile \
+                    --disable-silent-rules
+
+post-activate {
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+}
+
+livecheck.type      gnome
+
+
+platform darwin powerpc {
+    supported_archs noarch
+    configure.compiler gcc
+    distfiles
+    depends_extract
+    depends_build
+    depends_run
+    depends_lib
+    patch {}
+    configure {}
+    build {}
+    destroot {
+        xinstall -d ${destroot}${prefix}/share/doc/${name}
+        system "echo ${name} is an empty port on this OS version because the functionality cannot be provided by the OS. > ${destroot}${prefix}/share/doc/${name}/README.txt"
+    }
+}
