@@ -1,0 +1,20 @@
+--- libgimpbase/gimputils.c.orig	2020-11-07 09:37:22.000000000 -0800
++++ libgimpbase/gimputils.c	2020-11-07 09:43:48.000000000 -0800
+@@ -1202,7 +1202,17 @@
+   uint64   tid64;
+   long     tid;
+ 
++#if MAC_OS_X_VERSION_MAX_ALLOWED < 1060
++    tid64 = pthread_mach_thread_np(pthread_self());
++#elif MAC_OS_X_VERSION_MIN_REQUIRED < 1060
++    if (&pthread_threadid_np) {
++        (void) pthread_threadid_np(NULL, &tid64);
++    } else {
++        tid64 = pthread_mach_thread_np(pthread_self());
++    }
++#else
+   pthread_threadid_np (NULL, &tid64);
++#endif
+   tid = (long) tid64;
+ #elif defined(SYS_gettid)
+   long     tid = syscall (SYS_gettid);

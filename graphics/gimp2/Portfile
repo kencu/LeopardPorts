@@ -3,6 +3,11 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           perl5 1.0
+PortGroup           legacysupport 1.1
+
+# if we are using libgcc7.5+, we need this wrapper bit
+# if we are using libgcc7.4.x, we don't
+legacysupport.redirect_bins gimp gimp-2.10 gimp-console gimp-console-2.10 gimp-debug-tool-2.0 gimp-test-clipboard-2.0 gimptool-2.0
 
 name                gimp2
 conflicts           gimp2-devel gimp3-devel
@@ -104,6 +109,9 @@ if {${os.platform} eq "darwin" && ${os.major} < 11} {
     # not an issue on 10.7 and later
     patchfiles-append \
                     patch-x11-widgets-fix.diff
+
+    # work around no pthread_threadid_np on < 10.6 until legacysupport has this
+    patchfiles-append patch-gimp2-pthread-threadid-np.diff
 }
 
 use_autoreconf      yes
