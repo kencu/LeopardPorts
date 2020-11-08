@@ -9,6 +9,9 @@ PortGroup           legacysupport 1.1
 # if we are using libgcc7.4.x, we don't
 legacysupport.redirect_bins gimp gimp-2.10 gimp-console gimp-console-2.10 gimp-debug-tool-2.0 gimp-test-clipboard-2.0 gimptool-2.0
 
+# legacysupport issue with the realpath wrap -- disable for now
+configure.cppflags-append -D__DISABLE_MP_LEGACY_SUPPORT_FUNCTION_WRAPPING__=1
+
 name                gimp2
 conflicts           gimp2-devel gimp3-devel
 # please remember to update the gimp metapackage to match
