@@ -1,0 +1,20 @@
+tried current jack @1.9.16
+
+failed due to :
+
+./common/JackLockedEngine.h:196:13: internal compiler error: in objc_eh_runtime_type, at objc/objc-next-runtime-abi-01.c:2791
+         int PortRegister(int refnum, const char* name, const char *type, unsigned int flags, unsigned int buffer_size, jack_port_id_t* port)
+             ^~~~~~~~~~~~
+libbacktrace could not find executable to open
+Please submit a full bug report,
+with preprocessed source if appropriate.
+See <https://trac.macports.org/newticket> for instructions.
+
+Waf: Leaving directory `/opt/local/var/macports/build/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_audio_jack/jack/work/jackaudio-jack2-f5f47c9/build'
+Build failed
+ -> task in 'coreaudio' failed with exit status 1: 
+	{task 23470256: cxx JackCoreAudioDriver.mm -> JackCoreAudioDriver.mm.8.o}
+['/opt/local/bin/g++-mp-7', '-pipe', '-Os', '-arch', 'ppc', '-Wall', '-std=gnu++11', '-Wno-deprecated-register', '-fPIC', '-I.', '-I..', '-Icommon', '-I../common', '-Icommon/jack', '-I../common/jack', '-Imacosx', '-I../macosx', '-Iposix', '-I../posix', '-DAFTEN=1', '-DHAVE_DOXYGEN=0', '-DHAVE_ALSA=0', '-DHAVE_FIREWIRE=0', '-DHAVE_IIO=0', '-DHAVE_PORTAUDIO=0', '-DHAVE_WINMME=0', '-DHAVE_CELT=0', '-DHAVE_OPUS=0', '-DHAVE_SAMPLERATE=1', '-DHAVE_SNDFILE=1', '-DHAVE_READLINE=0', '-DHAVE_SYSTEMD=0', '-DHAVE_DB=0', '-DHAVE_ALLOCA_H=1', '-DHAVE_EXECINFO_H=1', '-DUSE_CLASSIC_AUTOLAUNCH=1', '-DCLIENT_NUM=256', '-DPORT_NUM_FOR_CLIENT=2048', '-DADDON_DIR="/opt/local/lib/jack"', '-DJACK_LOCATION="/opt/local/bin"', '-DUSE_POSIX_SHM=1', '-DJACKMP=1', '-DHAVE_CONFIG_H', '-DSERVER_SIDE', '../macosx/coreaudio/JackCoreAudioDriver.mm', '-c', '-o/opt/local/var/macports/build/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_audio_jack/jack/work/jackaudio-jack2-f5f47c9/build/macosx/coreaudio/JackCoreAudioDriver.mm.8.o', '-I/opt/local/include']
+Command failed:  cd "/opt/local/var/macports/build/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_audio_jack/jack/work/jack2-1.9.16" && /opt/local/bin/python2.7 ./waf build --verbose 
+Exit code: 1
+
