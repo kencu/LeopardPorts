@@ -1,0 +1,4 @@
+does not build with clang-7 as assembler
+and gcc7 as fortran compiler
+due to optsettings
+
