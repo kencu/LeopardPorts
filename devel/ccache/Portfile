@@ -35,7 +35,9 @@ use_xz              yes
 platform darwin powerpc {
     patchfiles-append  patch-ccache-powerpc-darwin.diff
 }
-
+platform darwin 8 {
+    patchfiles-append  patch-ccache-no-posix-tiger.diff
+}
 compiler.c_standard 1999
 compiler.cxx_standard \
                     2011
