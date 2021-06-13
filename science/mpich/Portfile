@@ -1,0 +1,95 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compilers 1.0
+PortGroup           legacysupport 1.1
+
+name                mpich
+version             3.4.2
+revision            0
+checksums           rmd160  334df002a4bf6794d96cdfc187d35601bd6fe40b \
+                    sha256  5c19bea8b84e8d74cca5f047e82b147ff3fba096144270e3911ad623d6c587bf \
+                    size    32850822
+
+license             BSD
+categories          science parallel net
+platforms           darwin
+maintainers         nomaintainer
+
+description         Message Passing Interface (MPI) Library
+long_description    MPICH is a high-performance and widely portable\
+                    implementation of the Message Passing Interface (MPI) standard.
+
+homepage            https://www.mpich.org/
+master_sites        ${homepage}static/downloads/${version}
+
+subport mpich {
+    depends_lib-append  port:$name-default
+    distfiles
+    patchfiles
+    supported_archs     noarch
+    use_configure       no
+    build {}
+    destroot {
+        set docdir      ${destroot}${prefix}/share/doc/${name}
+        xinstall -d     ${docdir}
+        system "echo $name is a stub port > ${docdir}/README"
+    }
+}
+
+subport mpich-default {
+    compilers.choose    fc f77 f90
+    compilers.setup     default_fortran
+    compilers.allow_arguments_mismatch yes
+
+    # Prevent "ccache" and "distcc" from being baked into wrapper scripts.
+    configure.ccache    no
+    configure.distcc    no
+
+    set cname mp
+
+    depends_build-append port:pkgconfig port:hwloc
+    depends_lib-append   port:libxml2
+    depends_lib-append   [fortran_variant_depends]
+
+    configure.args      --disable-dependency-tracking \
+                        --disable-silent-rules \
+                        --enable-fast=all \
+                        --enable-shared \
+                        --enable-romio \
+                        --enable-timer-type=mach_absolute_time \
+                        --with-pm=hydra \
+                        --with-hwloc-prefix=${prefix} \
+                        --prefix=${prefix} \
+                        --program-suffix=-${name}-${cname} \
+                        --libdir=${prefix}/lib/${name}-${cname} \
+                        --sysconfdir=${prefix}/etc/${name}-${cname} \
+                        --includedir=${prefix}/include/${name}-${cname} \
+                        "F90FLAGS='' F90=''"
+
+    if {${os.major} < 12} {
+        # MPICH requires OpenCL version 1.2
+        configure.args-append --enable-opencl=no
+    }
+
+    # add missing __POWERPC defs
+    patchfiles-append patch-mpich-darwin-powerpc.diff
+
+    platform darwin powerpc {
+        # libfabric calls for atomicops, on PPC at least
+        compiler.blacklist-append *gcc-4.* *gcc-3.*
+        configure.ldflags-append -latomic
+    }
+
+    post-destroot {
+        delete ${destroot}${prefix}/share/man
+        delete ${destroot}${prefix}/share/doc
+    }
+
+    test.run            yes
+    test.target         check
+
+    livecheck.type      regex
+    livecheck.regex     {href=.([0-9.p]+)/}
+    livecheck.url       ${homepage}/static/downloads/
+}
