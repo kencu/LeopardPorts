@@ -37,6 +37,8 @@ platform macosx {
     configure.args-append --with-audio=coreaudio
 }
 
+configure.cflags-append -std=c99
+
 # For i386 we'd like to use --with-cpu=sse but this fails with:
 # ld: illegal text-relocation to intwinbase in .libs/tabinit_mmx.o from _INT123_make_decode_tables_mmx_asm in .libs/tabinit_mmx.o for architecture i386
 # see also http://sourceforge.net/tracker/index.php?func=detail&aid=3504701&group_id=135704&atid=733194
