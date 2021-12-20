@@ -95,7 +95,7 @@ post-patch {
 # https://trac.macports.org/ticket/61777
 compiler.cxx_standard 2011
 
-# libgcc headers are missing ll* functions on all clang compilers < gcc7
+# libgcc headers are missing ll* functions on all clang compilers and gcc < gcc7
 if {${os.platform} eq "darwin" && ${cxx_stdlib} ne "libc++"} {
     compiler.blacklist *clang* *gcc6 *gcc5 *gcc-4*
 }
