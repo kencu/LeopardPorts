@@ -2,10 +2,11 @@
 
 PortSystem          1.0
 PortGroup           meson 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 name                gexiv2
-version             0.12.1
-revision            0
+version             0.12.2
+
 license             GPL-2+
 set branch          [join [lrange [split ${version} .] 0 1] .]
 description         gexiv2 is a GObject-based wrapper around the exiv2 library.
@@ -22,9 +23,12 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  174717b7098fa545a60e05252c0568023dfdbab8 \
-                    sha256  8aeafd59653ea88f6b78cb03780ee9fd61a2f993070c5f0d0976bed93ac2bd77 \
-                    size    372104
+checksums           rmd160  c17e79f2dfcb862327dfabbf15748ad4a17e8911 \
+                    sha256  2322b552aca330eef79724a699c51a302345d5e074738578b398b7f2ff97944c \
+                    size    378428
+
+compiler.blacklist-append \
+                    {clang < 900}
 
 depends_build-append \
                     port:pkgconfig \
@@ -33,7 +37,7 @@ depends_build-append \
 depends_lib         port:exiv2 \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:gobject-introspection \
-                    port:vala
+                    path:bin/vala:vala
 
 # one each of python2 python3 allowed
 
@@ -43,22 +47,27 @@ variant python27 description {Build Python2 bindings using Python 2.7} {
 
 default_variants +python27
 
-variant python36 conflicts python37 python38 description {Build Python3 bindings using Python 3.6} {
+variant python36 conflicts python37 python38 python39 description {Build Python3 bindings using Python 3.6} {
     depends_lib-append      port:py36-gobject3
 }
 
-variant python37 conflicts python36 python38 description {Build Python3 bindings using Python 3.7} {
+variant python37 conflicts python36 python38 python39 description {Build Python3 bindings using Python 3.7} {
     depends_lib-append      port:py37-gobject3
 }
 
-variant python38 conflicts python36 python37 description {Build Python3 bindings using Python 3.8} {
+variant python38 conflicts python36 python37 python39 description {Build Python3 bindings using Python 3.8} {
     depends_lib-append      port:py38-gobject3
+}
+
+variant python39 conflicts python36 python37 python38 description {Build Python3 bindings using Python 3.9} {
+    depends_lib-append      port:py39-gobject3
 }
 
 if {![variant_isset python36] && \
     ![variant_isset python37] && \
-    ![variant_isset python38]} {
-    default_variants +python38
+    ![variant_isset python38] && \
+    ![variant_isset python39]} {
+    default_variants +python39
 }
 
 patchfiles          patch-python-bins.diff
@@ -76,6 +85,8 @@ post-patch {
         reinplace "s|@@PYTHON3_BIN@@|${prefix}/bin/python3.7|" ${worksrcpath}/meson.build
     } elseif {[variant_isset python38]} {
         reinplace "s|@@PYTHON3_BIN@@|${prefix}/bin/python3.8|" ${worksrcpath}/meson.build
+    } elseif {[variant_isset python39]} {
+        reinplace "s|@@PYTHON3_BIN@@|${prefix}/bin/python3.9|" ${worksrcpath}/meson.build
     } else {
         configure.args-append -Dpython3_girdir=no
     }
@@ -84,15 +95,18 @@ post-patch {
 # https://trac.macports.org/ticket/61777
 compiler.cxx_standard 2011
 
-configure.args-append -Dgtk_doc=true
-
-# the legacysupport math fixes are broken so we have to use gcc7+
+# libgcc headers are missing ll* functions on all clang compilers < gcc7
 if {${os.platform} eq "darwin" && ${cxx_stdlib} ne "libc++"} {
     compiler.blacklist *clang* *gcc6 *gcc5 *gcc-4*
 }
 
+configure.args-append -Dgtk_doc=true
+
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
 # uses g-ir-scanner, which uses $CC from env
-if {[variant_isset universal]} {
+if {${universal_possible} && [variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
         lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
         lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
@@ -100,6 +114,11 @@ if {[variant_isset universal]} {
 } else {
     build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
     destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+
+platform darwin 8 {
+    # Tiger lacks @rpath, apply the usual gtk-doc workaround
+    destroot.env-append    "DYLD_LIBRARY_PATH=${build_dir}/${name}"
 }
 
 livecheck.type      gnome
