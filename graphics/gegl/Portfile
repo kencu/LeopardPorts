@@ -7,13 +7,13 @@ PortGroup           meson 1.0
 PortGroup           legacysupport 1.0
 
 name                gegl
-version             0.4.26
+version             0.4.32
 revision            0
 set branch          [join [lrange [split ${version} .] 0 1] .]
 conflicts           gegl-devel
 license             {GPL-3+ LGPL-3+}
 categories          graphics
-maintainers         {devans @dbevans} openmaintainer
+maintainers         {mascguy @mascguy} openmaintainer
 platforms           darwin
 
 description         GEGL is a graph based image processing framework.
@@ -27,9 +27,9 @@ master_sites        gimp:${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  df57119d659c8a5dacae6fcf3783058d7dd10e3f \
-                    sha256  0f371e2ed2b92162fefd3dde743e648ca08a6a1b2b05004867fbddc7e211e424 \
-                    size    4942492
+checksums           rmd160  e55ce5195c6db210c790722b7bf94f2f8e3aa0ce \
+                    sha256  668e3c6b9faf75fb00512701c36274ab6f22a8ba05ec62dbf187d34b8d298fa1 \
+                    size    5633796
 
 depends_build-append \
                     port:pkgconfig \
@@ -62,11 +62,6 @@ depends_lib         path:lib/pkgconfig/babl.pc:babl \
 # proposed fix for 32 bit builds
 # https://trac.macports.org/ticket/58524
 patchfiles-append   patch-gegl-32bit-host-statistics.diff
-
-# various upstream gir/vala fixes
-patchfiles-append   patch-export_package-for-gir-generation.diff \
-                    patch-explicit-vapi-deps.diff \
-                    patch-vapi-metadata-dirs.diff
 
 # no OpenCL until SnowLeopard
 if {${os.major} < 10} {
