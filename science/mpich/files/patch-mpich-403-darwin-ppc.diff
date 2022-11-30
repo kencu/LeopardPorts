@@ -1,0 +1,21 @@
+--- src/mpi/datatype/typerep/src/typerep_util.h.orig	2022-11-29 09:10:49.000000000 -0800
++++ src/mpi/datatype/typerep/src/typerep_util.h	2022-11-29 09:14:21.000000000 -0800
+@@ -25,6 +25,18 @@
+ 
+ /* Relying on the common predefined macros */
+ 
++/* added for PPC APPLE */
++#if defined __APPLE__
++#if defined (__ppc__) || defined(__ppc64__)
++#ifndef __BYTE_ORDER
++#define __BYTE_ORDER __DARWIN_BYTE_ORDER
++#endif
++#ifndef __BIG_ENDIAN
++#define __BIG_ENDIAN __DARWIN_BIG_ENDIAIN
++#endif
++#endif
++#endif
++
+ #if defined(WORDS_BIGENDIAN)
+ #define BLENDIAN 0
+ 

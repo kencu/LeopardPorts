@@ -5,11 +5,11 @@ PortGroup           compilers 1.0
 PortGroup           legacysupport 1.1
 
 name                mpich
-version             3.4.2
+version             4.0.3
 revision            0
-checksums           rmd160  334df002a4bf6794d96cdfc187d35601bd6fe40b \
-                    sha256  5c19bea8b84e8d74cca5f047e82b147ff3fba096144270e3911ad623d6c587bf \
-                    size    32850822
+checksums           rmd160  7a65f2a1d080c2b7812295a8fc0b77ec1609b166 \
+                    sha256  17406ea90a6ed4ecd5be39c9ddcbfac9343e6ab4f77ac4e8c5ebe4a3e3b6c501 \
+                    size    38135700
 
 license             BSD
 categories          science parallel net
@@ -73,7 +73,7 @@ subport mpich-default {
     }
 
     # add missing __POWERPC defs
-    patchfiles-append patch-mpich-darwin-powerpc.diff
+    patchfiles-append patch-mpich-403-darwin-ppc.diff
 
     platform darwin powerpc {
         # libfabric calls for atomicops, on PPC at least
